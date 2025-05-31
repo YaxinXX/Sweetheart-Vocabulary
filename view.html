@@ -471,22 +471,37 @@
       padding: 8px 16px;
       border-radius: 30px;
       transition: background 0.3s ease;
-      background: rgba#bfa2cc;
+      background: rgba(191, 162, 204, 0.2); /* 使用半透明紫色背景 */
       display: flex;
       align-items: center;
       gap: 8px;
       height: 40px;
       font-size: 15px;
+      border: none; /* 确保没有边框 */
+      cursor: pointer; /* 添加指针样式 */
     }
 
     .home-btn:hover {
-      background: #ebdff1;
+      background: rgba(235, 223, 241, 0.8); /* 悬停时使用更深的紫色 */
+    }
+
+    .bottom-controls {
+      position: fixed;
+      bottom: 20px;
+      right: 30px;
+      z-index: 100;
     }
   </style>
 </head>
 <body>
   <div class="top-controls" style="position: absolute; top: 20px; right: 30px;">
     <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Home</a>
+  </div>
+
+  <div class="bottom-controls" style="position: fixed; bottom: 20px; right: 30px;">
+    <button id="clearStorageBtn" class="home-btn" title="Clear all data">
+      <i class="fas fa-trash-alt"></i> Clear All Data
+    </button>
   </div>
 
   <div class="wrapper">
@@ -931,6 +946,21 @@
     
     renderWords();
   };
+  // 添加在现有JS之后
+  function clearLocalStorage() {
+    if (confirm('Are you sure you want to clear all locally stored data? This action cannot be undone!')) {
+      localStorage.removeItem('myWords');
+      renderWords(); // Refresh word list
+      alert('Local data has been cleared!');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const clearBtn = document.getElementById('clearStorageBtn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', clearLocalStorage);
+    }
+  });
 </script>
 </body>
 </html>
