@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Word • My Vocabulary</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- 字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #C3A6CB;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      background: #f9f7fb;
+      color: #333;
+    }
+
+    .wrapper {
+      max-width: 66%;
+      margin: 40px auto;
+      padding: 40px 30px;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,.06);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 30px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    label {
+      display: block;
+      margin: 22px auto 8px;
+      font-weight: 600;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto 14px;
+      display: block;
+      padding: 14px 16px;
+      border: 1px solid #d0cfe4;
+      border-radius: var(--radius);
+      font-size: 16px;
+      background: #fafafa;
+    }
+
+    .synonymsInput, .phrasesInput {
+      min-height: 60px;
+    }
+
+    #notesInput {
+      min-height: 120px;
+    }
+
+    button {
+      margin: 28px auto 0;
+      padding: 14px 38px;
+      display: block;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
+      transition: background .2s ease, transform .15s ease;
+    }
+
+    button:hover {
+      background: #b092bf;
+    }
+
+    button:active {
+      transform: scale(.98);
+    }
+
+    .add-btn {
+      background: #e5d9ea;
+      color: #664c75;
+      font-size: 15px;
+      margin-top: 10px;
+    }
+
+    .add-btn:hover {
+      background: #dacedf;
+    }
+
+    .word-group {
+      border-left: 5px solid var(--primary);
+      padding: 18px 16px;
+      margin: 24px 0;
+      background: #fdfcfe;
+      border-radius: var(--radius);
+      position: relative;
+    }
+
+    .remove-btn {
+      position: absolute;
+      left: 12px;
+      top: 0px;
+      background: transparent;
+      color: #888;
+      padding: 4px 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: color 0.2s ease, text-decoration 0.2s ease;
+    }
+
+    .remove-btn:hover {
+      color: #444;
+      text-decoration: underline;
+    }
+
+    .top-controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .home-btn {
+      color: #a987be;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 30px;
+      transition: background 0.3s ease;
+      background: rgba#bfa2cc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      font-size: 15px;
+    }
+
+    .home-btn:hover {
+      background: #ebdff1;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-controls" style="position: absolute; top: 20px; right: 30px;">
+    <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Home</a>
+  </div>
+
+  <div class="wrapper">
+    <h1>Add a New Word</h1>
+
+    <!-- 基本信息 -->
+    <label for="wordInput">Word</label>
+    <input type="text" id="wordInput" placeholder="e.g. sustainability"/>
+
+    <label for="categoryInput">Category</label>
+    <select id="categoryInput">
+      <option>Academic</option>
+      <option>Daily</option>
+      <option>Slang</option>
+      <option>Business</option>
+    </select>
+
+    <label for="ratingInput">Importance (Stars)</label>
+    <select id="ratingInput">
+      <option value="1">⭐</option>
+      <option value="2">⭐⭐</option>
+      <option value="3">⭐⭐⭐</option>
+      <option value="4">⭐⭐⭐⭐</option>
+      <option value="5">⭐⭐⭐⭐⭐</option>
+    </select>
+
+    <!-- 词义组 -->
+    <h3 style="text-align:center;margin-top:40px;">Meanings</h3>
+    <div id="meaningsContainer"></div>
+    <button class="add-btn" onclick="addMeaningGroup()">➕ Add Meaning Group</button>
+
+    <!-- Notes -->
+    <label for="notesInput">Notes</label>
+    <textarea id="notesInput" placeholder="Key usages, comparisons with similar words..."></textarea>
+
+    <!-- 保存按钮 -->
+    <button onclick="saveWord()">🌸 Save Word</button>
+  </div>
+
+  <script>
+    function addMeaningGroup() {
+      const container = document.getElementById('meaningsContainer');
+      const div = document.createElement('div');
+      div.className = 'word-group';
+
+      div.innerHTML = `
+        <label>Part of Speech</label>
+        <input type="text" placeholder="noun, verb…" class="posInput">
+
+        <label>Definition</label>
+        <textarea class="definitionInput" placeholder="Meaning of the word"></textarea>
+
+        <label>Example Sentence</label>
+        <textarea class="exampleInput" placeholder="Use in a sentence"></textarea>
+
+        <label>Synonyms</label>
+        <textarea class="synonymsInput" placeholder="maintain, preserve"></textarea>
+
+        <label>Phrases</label>
+        <textarea class="phrasesInput" placeholder="sustainable development, sustained growth"></textarea>
+      `;
+
+      // 只有不是第一个词义组才添加删除按钮
+      if (container.children.length > 0) {
+        div.innerHTML += `<button class="remove-btn" onclick="removeMeaningGroup(this)">✕</button>`;
+      }
+
+      container.appendChild(div);
+    }
+
+    function removeMeaningGroup(btn) {
+      const group = btn.closest('.word-group');
+      group.remove();
+    }
+
+    window.onload = addMeaningGroup;
+
+    function saveWord() {
+      const word = document.getElementById('wordInput').value.trim();
+      if (!word) {
+        alert('Word cannot be empty');
+        return;
+      }
+      const category = document.getElementById('categoryInput').value;
+      const rating = parseInt(document.getElementById('ratingInput').value);
+      const notes = document.getElementById('notesInput').value.trim();
+
+      const meanings = [...document.querySelectorAll('.word-group')].map(div => ({
+        pos: div.querySelector('.posInput').value.trim(),
+        definition: div.querySelector('.definitionInput').value.trim(),
+        example: div.querySelector('.exampleInput').value.trim(),
+        synonyms: div.querySelector('.synonymsInput').value.split(',').map(s => s.trim()).filter(Boolean),
+        phrases: div.querySelector('.phrasesInput').value.split(',').map(p => p.trim()).filter(Boolean)
+      }));
+
+      const newWord = {
+        word, category, rating, notes, meanings, remembered: false
+      };
+
+      const words = JSON.parse(localStorage.getItem('myWords') || '[]');
+      words.push(newWord);
+      localStorage.setItem('myWords', JSON.stringify(words));
+      alert('✅ Word saved!');
+      
+      // 清空所有输入内容
+      document.getElementById('wordInput').value = '';
+      document.getElementById('categoryInput').selectedIndex = 0;
+      document.getElementById('ratingInput').selectedIndex = 0;
+      document.getElementById('notesInput').value = '';
+
+      const container = document.getElementById('meaningsContainer');
+      container.innerHTML = '';
+      addMeaningGroup(); // 加回一个空的词义组
+    }
+  </script>
+</body>
+</html>
